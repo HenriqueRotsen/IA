@@ -15,6 +15,7 @@ def encontrar_vazio(estado):
                 return i, j
 
 
+
 def gerar_filhos(estado):
     filhos = []
     i, j = encontrar_vazio(estado)
