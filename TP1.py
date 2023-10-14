@@ -1,6 +1,8 @@
 from collections import deque
 import sys
 import heapq
+import time
+
 
 PUZZLE_SIZE = 3
 OBJETIVO = [[1, 2, 3],
@@ -227,6 +229,9 @@ def hill_climbing(estado_inicial):
 
 
 # MAIN
+
+inicio = time.time()
+
 if len(sys.argv) < 11 or len(sys.argv) > 12:
     sys.exit("Quantidade inválida de parâmetros, siga o formato:\n<algoritimo> ex: B, I, U, A, G, H\n<entrada> ex: 1 2 3 4 0 5 6 7 8\n<PRINT> (Parâmetro opicional)\n")
 
@@ -237,6 +242,7 @@ if algoritimo not in ["B", "I", "U", "A", "G", "H"]:
 
 valores = sys.argv[2:11]
 
+mostrar = False
 if len(sys.argv) > 11:
     assert (sys.argv[-1] == "PRINT")
     mostrar = True
@@ -261,8 +267,13 @@ if matriz:
 
     if caminho_solucao:
         print(len(caminho_solucao))
-        for passo in caminho_solucao:
-            print("\n".join([" ".join(map(str, linha)) for linha in passo]))
-            print(" ")
+        if mostrar:
+            for passo in caminho_solucao:
+                print("\n".join([" ".join(map(str, linha)) for linha in passo]))
+                print(" ")
     else:
         print("Não foi possível encontrar uma solução.")
+
+fim = time.time()
+tempo_decorrido = fim - inicio
+print(f'O programa levou {tempo_decorrido:.5f} segundos para ser executado.')
