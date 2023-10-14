@@ -15,7 +15,6 @@ def encontrar_vazio(estado):
                 return i, j
 
 
-
 def gerar_filhos(estado):
     filhos = []
     i, j = encontrar_vazio(estado)
@@ -213,6 +212,20 @@ def greedy_best_first_search(estado_inicial):
                 i = i + 1
 
 
+def hill_climbing(estado_inicial):
+    caminho = []
+    estado = estado_inicial
+    while True:
+        vizinhos = gerar_filhos(estado)
+        melhor_vizinho = min(vizinhos, key=lambda estado: sum(heuristica1(estado)))
+        if sum(heuristica1(melhor_vizinho)) >= sum(heuristica1(estado)):
+                caminho.append(estado)
+                return caminho
+
+        estado = melhor_vizinho
+        caminho.append(estado)
+
+
 # MAIN
 if len(sys.argv) < 11 or len(sys.argv) > 12:
     sys.exit("Quantidade inválida de parâmetros, siga o formato:\n<algoritimo> ex: B, I, U, A, G, H\n<entrada> ex: 1 2 3 4 0 5 6 7 8\n<PRINT> (Parâmetro opicional)\n")
@@ -242,9 +255,9 @@ if matriz:
     elif algoritimo == "G":
         caminho_solucao = greedy_best_first_search(matriz)
     elif algoritimo == "H":
-        caminho_solucao = bfs(matriz)
+        caminho_solucao = hill_climbing(matriz)
     else:
-        caminho_solucao = bfs(matriz)
+        print("Erro: verificar input")
 
     if caminho_solucao:
         print(len(caminho_solucao))
