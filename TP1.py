@@ -99,7 +99,7 @@ def ids(estado_inicial):
 
     while True:
         resultado = dfs_limitado(
-            estado_inicial, [estado_inicial], limite, set())
+            estado_inicial, [], limite, set())
 
         if resultado is not None:
             return resultado
@@ -276,4 +276,4 @@ if matriz:
 
 fim = time.time()
 tempo_decorrido = fim - inicio
-print(f'O programa levou {tempo_decorrido:.5f} segundos para ser executado.')
+#print(f'O programa {algoritimo} levou {tempo_decorrido:.5f} segundos para ser executado. {len(caminho_solucao)}')
