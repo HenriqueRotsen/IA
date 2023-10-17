@@ -72,6 +72,24 @@ def bfs(estado_inicial):
                 fila.append((filho, caminho + [filho]))
 
 
+class dfs_visitados:
+    def __init__(self):
+        self.prof_set = [set()]
+
+    def add(self, elem, prof):
+        if len(self.prof_set) >= prof + 1:
+            self.prof_set[prof].add(elem)
+        else:
+            self.prof_set.append(set())
+            self.prof_set[prof].add(elem)
+
+    def tem_elemento(self, elem, prof):
+        for i in range(prof):
+            if elem in self.prof_set[i]:
+                return True
+        return False
+
+
 def dfs_limitado(estado, caminho, limite, visitados):
     # Converte a lista de listas em uma tupla de tuplas
     estado_tupla = tuple(map(tuple, estado))
@@ -85,9 +103,9 @@ def dfs_limitado(estado, caminho, limite, visitados):
     for filho in gerar_filhos(estado):
         # Converte o filho em uma tupla de tuplas
         filho_tupla = tuple(map(tuple, filho))
-        if filho_tupla not in visitados:
-            visitados.add(filho_tupla)
+        if not visitados.tem_elemento(filho_tupla, len(caminho)):
             novo_caminho = caminho + [filho]
+            visitados.add(filho_tupla, len(novo_caminho))
             resultado = dfs_limitado(
                 filho, novo_caminho, limite - 1, visitados)
             if resultado is not None:
@@ -99,7 +117,7 @@ def ids(estado_inicial):
 
     while True:
         resultado = dfs_limitado(
-            estado_inicial, [], limite, set())
+            estado_inicial, [], limite, dfs_visitados())
 
         if resultado is not None:
             return resultado
@@ -219,10 +237,11 @@ def hill_climbing(estado_inicial):
     estado = estado_inicial
     while True:
         vizinhos = gerar_filhos(estado)
-        melhor_vizinho = min(vizinhos, key=lambda estado: sum(heuristica1(estado)))
+        melhor_vizinho = min(
+            vizinhos, key=lambda estado: sum(heuristica1(estado)))
         if sum(heuristica1(melhor_vizinho)) >= sum(heuristica1(estado)):
-                caminho.append(estado)
-                return caminho
+            caminho.append(estado)
+            return caminho
 
         estado = melhor_vizinho
         caminho.append(estado)
@@ -233,12 +252,12 @@ def hill_climbing(estado_inicial):
 inicio = time.time()
 
 if len(sys.argv) < 11 or len(sys.argv) > 12:
-    sys.exit("Quantidade inválida de parâmetros, siga o formato:\n<algoritimo> ex: B, I, U, A, G, H\n<entrada> ex: 1 2 3 4 0 5 6 7 8\n<PRINT> (Parâmetro opicional)\n")
+    sys.exit("Quantidade inválida de parâmetros, siga o formato:\n<algoritmo> ex: B, I, U, A, G, H\n<entrada> ex: 1 2 3 4 0 5 6 7 8\n<PRINT> (Parâmetro opicional)\n")
 
-algoritimo = sys.argv[1]
-if algoritimo not in ["B", "I", "U", "A", "G", "H"]:
+algoritmo = sys.argv[1]
+if algoritmo not in ["B", "I", "U", "A", "G", "H"]:
     sys.exit(
-        "O parâmetro <algoritimo> não é válido, tente usar um desses: B, I, U, A, G, H\n")
+        "O parâmetro <algoritmo> não é válido, tente usar um desses: B, I, U, A, G, H\n")
 
 valores = sys.argv[2:11]
 
@@ -249,18 +268,20 @@ if len(sys.argv) > 11:
 
 matriz = criar_matriz(valores)
 
-if matriz:
-    if algoritimo == "B":
+if matriz == tuple(map(tuple, OBJETIVO)):
+    print("0")
+elif matriz:
+    if algoritmo == "B":
         caminho_solucao = bfs(matriz)
-    elif algoritimo == "I":
+    elif algoritmo == "I":
         caminho_solucao = ids(matriz)
-    elif algoritimo == "U":
+    elif algoritmo == "U":
         caminho_solucao = ucs(matriz)
-    elif algoritimo == "A":
+    elif algoritmo == "A":
         caminho_solucao = a_star(matriz)
-    elif algoritimo == "G":
+    elif algoritmo == "G":
         caminho_solucao = greedy_best_first_search(matriz)
-    elif algoritimo == "H":
+    elif algoritmo == "H":
         caminho_solucao = hill_climbing(matriz)
     else:
         print("Erro: verificar input")
@@ -269,11 +290,14 @@ if matriz:
         print(len(caminho_solucao))
         if mostrar:
             for passo in caminho_solucao:
-                print("\n".join([" ".join(map(str, linha)) for linha in passo]))
+                print("\n".join([" ".join(map(str, linha))
+                      for linha in passo]))
                 print(" ")
     else:
         print("Não foi possível encontrar uma solução.")
+else:
+    print("Erro desconhecido")
 
 fim = time.time()
 tempo_decorrido = fim - inicio
-#print(f'O programa {algoritimo} levou {tempo_decorrido:.5f} segundos para ser executado. {len(caminho_solucao)}')
+#print(f'O programa {algoritmo} levou {tempo_decorrido:.5f} segundos para ser executado. {len(caminho_solucao)}')
